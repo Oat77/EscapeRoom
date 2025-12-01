@@ -50,12 +50,16 @@ for dest in destinations:
 #Creates a parent Room class that initializes with a list of items, two doors and a random special item. 
 class Room: 
 
-    def __init__(self, items, door_1= random.choice(room_doors), door_2= random.choice(room_doors), special_item= random.choice(random_items)):
-        self.door1 = door_1
-        self.door2= door_2
-        self.special_item = special_item
+    def __init__(self, items):
+        self.special_item = random.choice(random_items)
         self.items= items
+        self.door1= random.choice(room_doors)
+        room_doors.remove(self.door1)
 
+        remaining_doors= [door for door in room_doors if door.dest != self.door1.dest]
+        self.door2= random.choice(remaining_doors)
+        room_doors.remove(self.door2)
+        
     def roomitems(self):
         return f"This room has the following items: {self.items}."
     
@@ -88,18 +92,36 @@ class Basement(Room):
     def __init__(self): 
         super().__init__(items= room_items["Basement"])
 
-""" test= Bedroom()
-assigned= test.door1.door_dest()
-assigned2= test.door2.door_dest()
-print (assigned)
-print (assigned2)
+bedroom= Bedroom()
+bathroom= Bathroom()
+livingRoom=  LivingRoom()
+kitchen= Kitchen()
+basement= Basement()
+
+
+""" 
+bedroom_assigned= bedroom.door1.door_dest()
+bedroom_assigned2= bedroom.door2.door_dest()
+
+print ("-------")
+bathroom_assigned= bathroom.door1.door_dest()
+bathroom_assigned2= bathroom.door2.door_dest()
+
+print ("---------------")
+
+
+print (bedroom_assigned)
+print (bedroom_assigned2)
 print ("_____________________________")
 
+print (bathroom_assigned)
+print (bathroom_assigned2)
 
-room_doors.remove(test.door1)
-room_doors.remove(test.door2)
+print ("------------------")
+
+
 for i in room_doors:
-    print (i.door_dest())
- """
+    print (i.door_dest()) """
+
 
 
