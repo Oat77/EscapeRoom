@@ -172,34 +172,37 @@ while True:
 
         while playerLives > 0:
             player1.confirm_location()
+            print ("\n")
             print (player1.currentLocation.roomitems())
             search_request= input ("There may be a special item here, do you want to search? (Y or N): ")
-            if search_request.lower == "y":
+            if search_request.lower() == "y":
                 print (player1.currentLocation.specialitem())
                 room_special= player1.currentLocation.special_item
                 collect_request= input("Woudd you like to collect this item? (Y or N): ")
                 if collect_request.lower() =='y':
                     randomQuestion= random.choice(list(questions.keys()))
                     answer = questions[randomQuestion]
-                    quiz= int(input(randomQuestion))
-                    try:
-                        if type(quiz)== int:
+                    quiz= input(randomQuestion + " ")
+                    if isinstance(answer, int):
+                        try:
+                            quiz== int(quiz)
+                        except TypeError:
+                            print("Incorrect answer format. Life lost!")
+                            playerLives -= 1
                             continue
-                        elif type(quiz) == str:
-                            quiz = quiz.lower().strip()
-                    except TypeError:
-                        print("Incorrect answer format.")
+                    else: 
+                        quiz = quiz.lower().strip()
+                    
                     if quiz == answer:
                         player1.item_pickup(room_special)
-                    else:
                         print ("Oops. Wrong answer... you lost a life. ")
                         playerLives-= 1
-                else: 
-                    continue
+                    else: 
+                        continue
             
             print (f"Door 1: {player1.currentLocation.door1.door_dest()}.\n")
             print (f"Door 2: {player1.currentLocation.door2.door_dest()}. \n")
-            playerMove= input ("Choose your door (1 or 2): \n")
+            playerMove= input ("Choose your door (1 or 2): \n \n")
             if playerMove == "1":
                 print ("Moving to the next room...\n \n")
                 if player1.currentLocation.door1.dest== "Outside":
@@ -207,15 +210,13 @@ while True:
                     break
                 else:
                     player1.player_move(player1.currentLocation.door1)
-                    player1.confirm_location()
             elif playerMove == "2": 
-                print ("Moving to the next room...\n \n")
+                print ("Moving to the next room...\n")
                 if player1.currentLocation.door2.dest== "Outside":
                     print ("You escaped!")
                     break
                 else:
                     player1.player_move(player1.currentLocation.door2)
-                    player1.confirm_location()
             playerLives-=1 
     else:
         break
