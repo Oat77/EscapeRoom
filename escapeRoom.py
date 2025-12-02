@@ -25,8 +25,7 @@ destinations = ["Bedroom", "Bathroom", "Living Room", "Kitchen", "Basement", "Ou
 #Special items
 random_items = ["painting", "doormat", "doll", "medicine", "vaccum", "block", "laptop", "fan", "teacup", "headphones", "gun", "knife", "glasses"]
 
-#List responsible for storing 'Door' objects
-room_doors = []
+
 
 #Standard items that will be assigned to each room.
 room_items = {
@@ -49,17 +48,6 @@ class Door:
         return f"This door leads to the {self.dest}."
 
 
-#Creats a list of two 'Door' objects tied to each destination in the 'destinations' list.
-#Ensures that only one outside Door object is created. 
-for dest in destinations:
-    if dest == "Outside":
-        room_doors.append(Door(dest))
-        continue
-    else:
-        room_doors.append(Door(dest))
-        room_doors.append(Door(dest))
-
-
 #Creates a parent Room class that initializes with a list of items, two doors and a random special item. 
 class Room: 
 
@@ -68,13 +56,15 @@ class Room:
         self.items= items
         self.location= [key for key, value in room_items.items() if value== self.items][0]
         if self.location == "Bathroom":
-            room_doors[:]= [d for d in room_doors if d.dest != "Outside"]
-        self.door1= random.choice(room_doors)
+            available_doors= [d for d in room_doors if d.dest != "Outside"]
+        else:
+            available_doors = room_doors[:]
+        self.door1= random.choice(available_doors)
         room_doors.remove(self.door1)
         self.occupied= False
         
         #Sublist containing doors whose destinations are not the same as door1
-        remaining_doors= [door for door in room_doors if door.dest != self.door1.dest]
+        remaining_doors= [door for door in available_doors if door.dest != self.door1.dest]
 
         #Assigns door2 and removes it from the global list of doors. 
         self.door2= random.choice(remaining_doors)
@@ -158,6 +148,20 @@ while True:
     startgame= input("Would you like to begin the game? (Enter 1 for 'Yes' or 2 for 'No')")
 
     if startgame == "1":
+ 
+        #List responsible for storing 'Door' objects
+        room_doors = []
+
+        #Creats a list of two 'Door' objects tied to each destination in the 'destinations' list.
+        #Ensures that only one outside Door object is created.
+        for dest in destinations:
+            if dest == "Outside":
+                room_doors.append(Door(dest))
+                continue
+            else:
+                room_doors.append(Door(dest))
+                room_doors.append(Door(dest))
+
         playerLives= 7
         bedroom= Bedroom()
         bathroom= Bathroom()
@@ -178,27 +182,33 @@ while True:
             if search_request.lower() == "y":
                 print (player1.currentLocation.specialitem())
                 room_special= player1.currentLocation.special_item
-                collect_request= input("Woudd you like to collect this item? (Y or N): ")
+                collect_request= input("Woudd you like to collect this item? (Y or N): \n" )
                 if collect_request.lower() =='y':
                     randomQuestion= random.choice(list(questions.keys()))
                     answer = questions[randomQuestion]
                     quiz= input(randomQuestion + " ")
                     if isinstance(answer, int):
                         try:
-                            quiz== int(quiz)
-                        except TypeError:
+                            quiz= int(quiz)
+                        except ValueError:
                             print("Incorrect answer format. Life lost!")
                             playerLives -= 1
+                            if playerLives <= 0:
+                                print("You ran out of lives! Game Over.")
+                                break
                             continue
-                    else: 
+                    elif isinstance(answer, str):
                         quiz = quiz.lower().strip()
-                    
+                        answer= answer.lower().strip()
                     if quiz == answer:
                         player1.item_pickup(room_special)
+                    else: 
                         print ("Oops. Wrong answer... you lost a life. ")
                         playerLives-= 1
-                    else: 
-                        continue
+                        if playerLives <= 0:
+                            print("You ran out of lives! Game Over.")
+                            break
+                        pass
             
             print (f"Door 1: {player1.currentLocation.door1.door_dest()}.\n")
             print (f"Door 2: {player1.currentLocation.door2.door_dest()}. \n")
@@ -222,37 +232,5 @@ while True:
         break
             
             
-
-
-
-
-# player1= Player("Omaro", random.choice(roomList))
-# print (player1.currentLocation)
-
-
-""" 
-bedroom_assigned= bedroom.door1.door_dest()
-bedroom_assigned2= bedroom.door2.door_dest()
-
-print ("-------")
-bathroom_assigned= bathroom.door1.door_dest()
-bathroom_assigned2= bathroom.door2.door_dest()
-
-print ("---------------")
-
-
-print (bedroom_assigned)
-print (bedroom_assigned2)
-print ("_____________________________")
-
-print (bathroom_assigned)
-print (bathroom_assigned2)
-
-print ("------------------")
-
-
-for i in room_doors:
-    print (i.door_dest()) """
-
 
 
