@@ -1,3 +1,9 @@
+""" Full Name: Omaro Taylor
+ID Number: 20251415
+Course Name: Python Programming (ITT212)
+Lecturer Name: Stefan Watson
+Semester: Fall 2025 """
+
 import random
 random.seed()
 
@@ -143,7 +149,8 @@ class Player:
 
 #Initialization of game UI
 game_over= False
-#Wemcome menu
+
+#Welcome menu
 while not game_over: 
     print("##########################")
     print(" WELCOME TO THE ESCAPE ROOM!")
@@ -190,7 +197,19 @@ while not game_over:
         #Difficulty level will impact the amount of points lost when a special item question is incorrectly answered. 
         penalty = None
         game_difficulty= input("Choose your difficulty. Enter 1 for easy, 2 for medium or 3 for hard: \n")
-        game_difficulty = int(game_difficulty)
+        
+        #Error handling for difficulty setting input.
+        while True: 
+            try:
+                game_difficulty = int(game_difficulty)
+                if game_difficulty in (1,2,3):
+                    break
+                else:
+                    raise ValueError
+            except ValueError:
+                game_difficulty = input("Invalid choice. Enter 1, 2 or 3: \n")
+
+        #Sets penalty based on selected difficulty level
         if game_difficulty == 1:
             penalty = 1
         elif game_difficulty == 2:
@@ -199,8 +218,9 @@ while not game_over:
             penalty = 3
 
         #Initializes player and assigns a starting room
-        playerName= input("Enter player name: ")
+        playerName= input("Enter player name: \n")
         player1= Player(playerName, random.choice(roomList))
+        life_check= player1.name+ " you have " + str(playerLives)+ " lives left."
 
 
         while playerLives > 0:
@@ -229,6 +249,7 @@ while not game_over:
                         except ValueError:
                             print("Incorrect answer format. Life lost!")
                             playerLives -= penalty
+                            print (life_check)
                             if playerLives <= 0:
                                 print("You ran out of lives! Game Over.")
                                 game_over = True
@@ -245,6 +266,7 @@ while not game_over:
                     else: 
                         print ("Oops. Wrong answer... you lost a life. ")
                         playerLives-= penalty
+                        print(life_check)
                         if playerLives <= 0:
                             print("You ran out of lives! Game Over.")
                             game_over = True
@@ -276,9 +298,10 @@ while not game_over:
                 else:
                     player1.player_move(player1.currentLocation.door2)
             playerLives-=1 
+            print(life_check)
     else:
         game_over = True
             
-            
+    
 
 
