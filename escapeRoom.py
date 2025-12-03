@@ -1,6 +1,7 @@
 import random
 random.seed()
 
+#Question repository for special items.
 questions= {
     "How many parishes are there in Jamaica": 14,
     "How many continents are there on the planet?": 7,
@@ -24,8 +25,6 @@ destinations = ["Bedroom", "Bathroom", "Living Room", "Kitchen", "Basement", "Ou
 
 #Special items
 random_items = ["painting", "doormat", "doll", "medicine", "vaccum", "block", "laptop", "fan", "teacup", "headphones", "gun", "knife", "glasses"]
-
-
 
 #Standard items that will be assigned to each room.
 room_items = {
@@ -54,11 +53,19 @@ class Room:
     def __init__(self, items):
         self.special_item = random.choice(random_items)
         self.items= items
+
+        #Assigns location of the room baased on the location of the assigned set of items. 
         self.location= [key for key, value in room_items.items() if value== self.items][0]
+
+        #Creates creates a door for each room.
+        #Ensures that the Bathroom does not get an outside door.
         if self.location == "Bathroom":
             available_doors= [d for d in room_doors if d.dest != "Outside"]
         else:
             available_doors = room_doors[:]
+
+        #Assigns a random door to the room
+        #Removes said door from door list to prevent reassignment.
         self.door1= random.choice(available_doors)
         room_doors.remove(self.door1)
         self.occupied= False
@@ -70,6 +77,7 @@ class Room:
         self.door2= random.choice(remaining_doors)
         room_doors.remove(self.door2)
         
+    #Displays room items and special items respectively. 
     def roomitems(self):
         return f"This room has the following items: {self.items}."
     
@@ -110,7 +118,7 @@ class Player:
         self.currentLocation= starting_room
         
     def confirm_location(self):
-        print (f"The player is now in the {self.currentLocation.location}.")
+        print (f"{self.name} is now in the {self.currentLocation.location}.")
 
     #Moves player from one room to another.
     def player_move(self, door):
@@ -130,10 +138,13 @@ class Player:
 
 
 
+#Initialization of game UI
+
+#Wemcome menu
 while True: 
     print("##########################")
-    print("# Welcome to the escape room! #")
-    print("##########################")
+    print(" WELCOME TO THE ESCAPE ROOM!")
+    print("########################## \n")
 
     print("Game Rules:\n")
 
@@ -145,7 +156,7 @@ while True:
     print("6. You have 7 doors to open before you get caught")
     print("7. Once your lives get to zero the game ends or if you escape\n \n ")
 
-    startgame= input("Would you like to begin the game? (Enter 1 for 'Yes' or 2 for 'No')")
+    startgame= input("Would you like to begin the game? (Enter 1 for 'Yes' or 2 for 'No'): \n")
 
     if startgame == "1":
  
@@ -162,6 +173,7 @@ while True:
                 room_doors.append(Door(dest))
                 room_doors.append(Door(dest))
 
+        #Initialize player lives and various rooms. 
         playerLives= 7
         bedroom= Bedroom()
         bathroom= Bathroom()
@@ -171,22 +183,31 @@ while True:
 
         roomList= [bedroom, bathroom, livingroom, kitchen, basement]
 
+        #Initializes player and assigns a starting room
         playerName= input("Enter player name: ")
         player1= Player(playerName, random.choice(roomList))
 
+
         while playerLives > 0:
+            #Display's player location and lists room items
             player1.confirm_location()
             print ("\n")
             print (player1.currentLocation.roomitems())
-            search_request= input ("There may be a special item here, do you want to search? (Y or N): ")
+
+            #Highlights presence of special item
+            search_request= input ("There may be a special item here, do you want to search? (Y or N): \n")
             if search_request.lower() == "y":
                 print (player1.currentLocation.specialitem())
                 room_special= player1.currentLocation.special_item
+
+                #Presents question in order to collect the special item.
                 collect_request= input("Woudd you like to collect this item? (Y or N): \n" )
                 if collect_request.lower() =='y':
                     randomQuestion= random.choice(list(questions.keys()))
                     answer = questions[randomQuestion]
                     quiz= input(randomQuestion + " ")
+                    
+                    #Checks formatting of answer. Takes away a life if incorrectly inputted.
                     if isinstance(answer, int):
                         try:
                             quiz= int(quiz)
@@ -200,6 +221,9 @@ while True:
                     elif isinstance(answer, str):
                         quiz = quiz.lower().strip()
                         answer= answer.lower().strip()
+                    
+                    #Adds item to player's inventory if correctly answered.
+                    #Subtracts a life if incorrectly answered. 
                     if quiz == answer:
                         player1.item_pickup(room_special)
                     else: 
@@ -210,20 +234,25 @@ while True:
                             break
                         pass
             
+            #Presents available doors atfer the special item phase is completed. 
             print (f"Door 1: {player1.currentLocation.door1.door_dest()}.\n")
             print (f"Door 2: {player1.currentLocation.door2.door_dest()}. \n")
             playerMove= input ("Choose your door (1 or 2): \n \n")
+            
+            #Moves player to the next room based on the door's destination.
+            #Ends the game if the chosen door is an outside door. 
+            #Otherwise, subtract 1 life.
             if playerMove == "1":
                 print ("Moving to the next room...\n \n")
                 if player1.currentLocation.door1.dest== "Outside":
-                    print ("You escaped!")
+                    print ("You escaped! Thanks for playing!")
                     break
                 else:
                     player1.player_move(player1.currentLocation.door1)
             elif playerMove == "2": 
                 print ("Moving to the next room...\n")
                 if player1.currentLocation.door2.dest== "Outside":
-                    print ("You escaped!")
+                    print ("You escaped! Thanks for playing!")
                     break
                 else:
                     player1.player_move(player1.currentLocation.door2)
