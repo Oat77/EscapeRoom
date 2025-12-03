@@ -129,8 +129,11 @@ class Player:
 
     #Picks up item. 
     def item_pickup(self, item):
-        self.inventory.append(item)
-        print(f"You have successfully retrieved the {item}! ")
+        if len(self.inventory)<3:
+            self.inventory.append(item)
+            print(f"You have successfully retrieved the {item}! ")
+        else: 
+            print("Your inventory is full. You cannot carry any more items.")
 
     #Displays player inventory
     def show_inventory(self):
@@ -139,9 +142,9 @@ class Player:
 
 
 #Initialization of game UI
-
+game_over= False
 #Wemcome menu
-while True: 
+while not game_over: 
     print("##########################")
     print(" WELCOME TO THE ESCAPE ROOM!")
     print("########################## \n")
@@ -183,6 +186,18 @@ while True:
 
         roomList= [bedroom, bathroom, livingroom, kitchen, basement]
 
+        #Allows player to choose th game's difficulty. 
+        #Difficulty level will impact the amount of points lost when a special item question is incorrectly answered. 
+        penalty = None
+        game_difficulty= input("Choose your difficulty. Enter 1 for easy, 2 for medium or 3 for hard: \n")
+        game_difficulty = int(game_difficulty)
+        if game_difficulty == 1:
+            penalty = 1
+        elif game_difficulty == 2:
+            penalty = 2
+        elif  game_difficulty == 3:
+            penalty = 3
+
         #Initializes player and assigns a starting room
         playerName= input("Enter player name: ")
         player1= Player(playerName, random.choice(roomList))
@@ -213,9 +228,10 @@ while True:
                             quiz= int(quiz)
                         except ValueError:
                             print("Incorrect answer format. Life lost!")
-                            playerLives -= 1
+                            playerLives -= penalty
                             if playerLives <= 0:
                                 print("You ran out of lives! Game Over.")
+                                game_over = True
                                 break
                             continue
                     elif isinstance(answer, str):
@@ -228,9 +244,10 @@ while True:
                         player1.item_pickup(room_special)
                     else: 
                         print ("Oops. Wrong answer... you lost a life. ")
-                        playerLives-= 1
+                        playerLives-= penalty
                         if playerLives <= 0:
                             print("You ran out of lives! Game Over.")
+                            game_over = True
                             break
                         pass
             
@@ -246,6 +263,7 @@ while True:
                 print ("Moving to the next room...\n \n")
                 if player1.currentLocation.door1.dest== "Outside":
                     print ("You escaped! Thanks for playing!")
+                    game_over = True
                     break
                 else:
                     player1.player_move(player1.currentLocation.door1)
@@ -253,12 +271,13 @@ while True:
                 print ("Moving to the next room...\n")
                 if player1.currentLocation.door2.dest== "Outside":
                     print ("You escaped! Thanks for playing!")
+                    game_over = True
                     break
                 else:
                     player1.player_move(player1.currentLocation.door2)
             playerLives-=1 
     else:
-        break
+        game_over = True
             
             
 
