@@ -220,8 +220,6 @@ while not game_over:
         #Initializes player and assigns a starting room
         playerName= input("Enter player name: \n")
         player1= Player(playerName, random.choice(roomList))
-        life_check= player1.name+ " you have " + str(playerLives)+ " lives left."
-
 
         while playerLives > 0:
             #Display's player location and lists room items
@@ -230,17 +228,17 @@ while not game_over:
             print (player1.currentLocation.roomitems())
 
             #Highlights presence of special item
-            search_request= input ("There may be a special item here, do you want to search? (Y or N): \n")
+            search_request= input ("There may be a special item here, do you want to search? (Y or N): \n \n")
             if search_request.lower() == "y":
                 print (player1.currentLocation.specialitem())
                 room_special= player1.currentLocation.special_item
 
                 #Presents question in order to collect the special item.
-                collect_request= input("Woudd you like to collect this item? (Y or N): \n" )
+                collect_request= input("Woudd you like to collect this item? (Y or N): \n \n" )
                 if collect_request.lower() =='y':
                     randomQuestion= random.choice(list(questions.keys()))
                     answer = questions[randomQuestion]
-                    quiz= input(randomQuestion + " ")
+                    quiz= input(randomQuestion + " \n \n")
                     
                     #Checks formatting of answer. Takes away a life if incorrectly inputted.
                     if isinstance(answer, int):
@@ -249,7 +247,7 @@ while not game_over:
                         except ValueError:
                             print("Incorrect answer format. Life lost!")
                             playerLives -= penalty
-                            print (life_check)
+                            print(f"{player1.name}, you have {playerLives} lives left. \n \n")
                             if playerLives <= 0:
                                 print("You ran out of lives! Game Over.")
                                 game_over = True
@@ -264,18 +262,18 @@ while not game_over:
                     if quiz == answer:
                         player1.item_pickup(room_special)
                     else: 
-                        print ("Oops. Wrong answer... you lost a life. ")
+                        print ("Oops. Wrong answer... you lost a life. \n \n")
                         playerLives-= penalty
-                        print(life_check)
+                        print(f"{player1.name}, you have {playerLives} lives left. \n \n")
                         if playerLives <= 0:
-                            print("You ran out of lives! Game Over.")
+                            print("You ran out of lives! Game Over.\n \n ")
                             game_over = True
                             break
                         pass
             
             #Presents available doors atfer the special item phase is completed. 
-            print (f"Door 1: {player1.currentLocation.door1.door_dest()}.\n")
-            print (f"Door 2: {player1.currentLocation.door2.door_dest()}. \n")
+            print (f"Door 1: {player1.currentLocation.door1.door_dest()}.\n \n")
+            print (f"Door 2: {player1.currentLocation.door2.door_dest()}. \n \n")
             playerMove= input ("Choose your door (1 or 2): \n \n")
             
             #Moves player to the next room based on the door's destination.
@@ -298,10 +296,10 @@ while not game_over:
                 else:
                     player1.player_move(player1.currentLocation.door2)
             playerLives-=1 
-            print(life_check)
+            print(f"{player1.name}, you have {playerLives} lives left. \n \n")
     else:
         game_over = True
             
-    
+    ###################### END OF PROGRAM ####################
 
 
