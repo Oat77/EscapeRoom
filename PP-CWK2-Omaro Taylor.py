@@ -1,9 +1,3 @@
-""" Full Name: Omaro Taylor
-ID Number: 20251415
-Course Name: Python Programming (ITT212)
-Lecturer Name: Stefan Watson
-Semester: Fall 2025 """
-
 import random
 random.seed()
 
